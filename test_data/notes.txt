@@ -1,0 +1,17 @@
+5450835 created on p1
+
+hour 0 - 4: household on p0
+hour 4: workplace on p1
+
+
+ 5451637 created on p0
+ 
+ hour 0 - 24: household on p1
+ 
+ 5451663 created on p1
+ 
+ hour 0 - 24: household on p1
+ 
+ 5451665 created on p0
+ 
+ hour 0 - 24: household on p1

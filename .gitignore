@@ -1,0 +1,32 @@
+# Compiled Object files
+*.slo
+*.lo
+*.o
+
+# Compiled Dynamic libraries
+*.so
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+*~
+.DS_Store
+
+*.d
+/io.txt
+/.cproject
+/.project
+/.settings
+
+src/contact_wrap.cpp
+src/contact_wrap.cpp.bu
+
+Debug/
+Release/
+/ReleaseWithDebInfo/
+/Profiling/
+/TODO.txt
+
+.vscode

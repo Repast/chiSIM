@@ -1,0 +1,21 @@
+random.seed = 1
+
+# bit more than 2 months
+stop.at = 1680.1
+
+# full week
+# stop.at = 128.1
+
+persons.file = /home/nick/Documents/chiSim_Input_NS/zip_60615_for_4p/persons_ns.csv
+places.file = /home/nick/Documents/chiSim_Input_NS/zip_60615_for_4p/places_ns.csv
+activities.file = /home/nick/Documents/chiSim_Input_NS/zip_60615_for_4p/activities_ns.csv
+
+#persons.file = /home/nick/Documents/chiSim_Input_NS/zip_60615/persons_ns.csv
+#places.file = /home/nick/Documents/chiSim_Input_NS/zip_60615/places_ns.csv
+#activities.file = /home/nick/Documents/chiSim_Input_NS/zip_60615/activities_ns.csv
+
+#persons.file = ../../../MRSA Inputs/geo_subsets/zip_60615_53_09_for_4_processes/people.csv 
+#places.file = ../../../MRSA Inputs/geo_subsets/zip_60615_53_09_for_4_processes/places.csv 
+#activities.file = ../../../MRSA Inputs/geo_subsets/zip_60615_53_09_for_4_processes/activities.csv 
+
+initial.infected.count = 13

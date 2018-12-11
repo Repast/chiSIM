@@ -1,0 +1,131 @@
+src :=
+test_src :=
+model_src :=
+
+CXX = mpicxx
+CXXLD = mpicxx
+
+CXX_RELEASE_FLAGS = -Wall -O2 -g0 -std=c++11 -MMD -MP
+CXX_DEBUG_FLAGS = -Wall -O0 -g3 -std=c++11 -MMD -MP
+
+CXX_FLAGS = -fopenmp $(CXX_DEBUG_FLAGS)
+LIB_CPPFLAGS = $(CXX_FLAGS)
+
+LD_FLAGS = -fopenmp
+LIB_LD_FLAGS = $(LD_FLAGS)
+LIB_EXT =
+
+OS := $(shell uname)
+
+ifeq ($(OS),Darwin)
+ LIB_LD_FLAGS += -dynamiclib
+ LIB_EXT = dylib
+else
+ # linux
+ LIB_CXX_FLAGS += -fPIC
+ LIB_LD_FLAGS += -shared 
+ LIB_EXT = so
+endif
+
+INCLUDES :=
+LIBS :=
+
+REPAST_LIB_DIR = $(HOME)/sfw/repast_hpc-2.1/lib
+REPAST_LIB = repast_hpc-2.1
+REPAST_INCLUDE = $(HOME)/sfw/repast_hpc-2.1/include
+
+BOOST_INCLUDE = /usr/local/include
+BOOST_LIB_DIR = /usr/local/lib
+BOOST_LIBS = -lboost_mpi-mt -lboost_system-mt -lboost_filesystem-mt
+
+INCLUDES += -I $(REPAST_INCLUDE)
+INCLUDES += -I $(BOOST_INCLUDE)
+INCLUDES += -I ../src
+
+GTEST_HOME = $(HOME)/sfw/googletest
+GTEST_LIB = $(GTEST_HOME)/lib/libgtest.a
+TEST_INCLUDES = $(INCLUDES) -I $(GTEST_HOME)/include
+
+LIBS += -L $(REPAST_LIB_DIR) -l$(REPAST_LIB)
+LIBS += -L $(BOOST_LIB_DIR) $(BOOST_LIBS)
+
+RPATHS += -Wl,-rpath -Wl,$(REPAST_LIB_DIR)
+
+SRC_DIR=../src/chi_sim
+MRSA_SRC_DIR=../src/mrsa
+MODEL_SRC_DIR = ../example/model_src
+BUILD_DIR = ./build
+
+include $(SRC_DIR)/module.mk
+include ../test/module.mk
+include $(MODEL_SRC_DIR)/module.mk
+
+# objects used by both executable and tests
+OBJECTS :=
+OBJECTS += $(subst .cpp,.o, $(addprefix $(BUILD_DIR), $(src)))
+
+# objects and deps for library
+LIB_OBJECTS := $(OBJECTS)
+
+# compiles source into tets
+TEST_OBJECTS := $(OBJECTS)
+TEST_OBJECTS += $(subst .cpp,.o, $(addprefix $(BUILD_DIR)/, $(test_src)))
+TEST_OBJECTS += $(BUILD_DIR)/test_main.o
+
+EXEC_OBJECTS := $(OBJECTS)
+EXEC_OBJECTS += $(subst .cpp,.o, $(addprefix $(BUILD_DIR)/, $(model_src)))
+EXEC_OBJECTS += $(BUILD_DIR)/main.o
+
+VPATH = $(SRC_DIR) $(MODEL_SRC_DIR) ../test
+
+# targets
+VERSION=0.0
+NAME=chiSIM-$(VERSION)
+LIB_NAME=lib$(NAME).$(LIB_EXT)
+MODEL_NAME=../example/sample_model
+
+TEST_NAME = unit_tests
+
+INSTALL_DIR = /home/nick/sfw/chiSIM-$(VERSION)
+INSTALL_INCLUDE = $(INSTALL_DIR)/include/chi_sim
+MRSA_INSTALL_INCLUDE = $(INSTALL_DIR)/include/mrsa
+INSTALL_LIB = $(INSTALL_DIR)/lib
+
+SED := sed
+MV := mv -f
+CP := cp
+MKDIR := mkdir -p
+
+-include $(TEST_OBJECTS:.o=.d)
+-include $(LIB_OBJECTS:.o=.d)
+-include $(EXEC_OBJECTS:.o=.d)
+
+.PHONY: all libchiSIM tests install model clean
+
+all: libchiSIM model tests
+
+install : libchiSIM
+	$(MKDIR) $(INSTALL_INCLUDE)
+	$(MKDIR) $(MRSA_INSTALL_INCLUDE)
+	$(MKDIR) $(INSTALL_LIB)
+	$(CP) $(SRC_DIR)/*.h $(INSTALL_INCLUDE)
+	$(CP) $(MRSA_SRC_DIR)/*.h $(MRSA_INSTALL_INCLUDE)
+	$(CP) $(LIB_NAME) $(INSTALL_LIB)
+	 
+model : $(EXEC_OBJECTS)
+	$(CXXLD) $(filter-out %.d, $^) $(LD_FLAGS) $(LIBS) $(RPATHS) -o $(MODEL_NAME)
+
+libchiSIM :  $(LIB_OBJECTS)
+	$(CXXLD) $(filter-out %.d, $^) $(LIB_LD_FLAGS) $(LIBS) $(RPATHS) -o $(LIB_NAME)
+	
+tests : $(TEST_DEPS) $(TEST_OBJECTS)
+	$(CXXLD) $(filter-out %.d, $^)  $(LIBS) $(RPATHS) $(GTEST_LIB) -o $(TEST_NAME)
+	
+$(BUILD_DIR)/%.o : %.cpp
+	@-mkdir -p $(dir $@)
+	$(CXX) $(CXX_FLAGS) $(LIB_CXX_FLAGS) $(INCLUDES) $(TEST_INCLUDES) -c $< -o $@
+	
+
+clean:
+	rm -fv $(LIB_NAME) $(TEST_NAME) $(MODEL_NAME)
+	rm -rf $(BUILD_DIR)/*

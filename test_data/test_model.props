@@ -1,0 +1,3 @@
+stop.at = 200
+
+activities.file = ../test_data/activities_ns.csv
