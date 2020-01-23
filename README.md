@@ -19,3 +19,6 @@ a dynamic agent-based simulation”. *Journal of translational medicine* 12 (1):
 Collier, N. T., J. Ozik, and C. M. Macal. 2015. “Large-Scale Agent-Based Modeling with Repast HPC: A Case Study in Parallelizing an Agent-Based Model”. 
 In *Euro-Par 2015: Parallel Processing Workshops - Euro-Par 2015 International Workshops, Vienna, Austria, August 24-25, 2015, Revised Selected Papers*, 454–465.
 
+Macal, C. M., N. T. Collier, J. Ozik, E. R. Tatara, and J. T. Murphy. 2018. “chiSIM:  An Agent-Based Simulation Model of Social Interactions in a Large Urban Area.” In 2018 Winter Simulation Conference (WSC), 810–20. https://doi.org/10.1109/WSC.2018.8632409.
+
+
